@@ -1,0 +1,68 @@
+order delivery:
+
+import heapq
+
+# Map house numbers to positions in a 3x3 grid
+house_to_pos = {
+    1:(0,0), 2:(0,1), 3:(0,2),
+    4:(1,0), 5:(1,1), 6:(1,2),
+    7:(2,0), 8:(2,1), 9:(2,2)
+}
+
+start_house = 1
+goal_house = 9
+
+def manhattan(pos):
+    gx, gy = house_to_pos[goal_house]
+    return abs(pos[0]-gx) + abs(pos[1]-gy)
+
+def neighbors(pos):
+    x, y = pos
+    for dx, dy in [(1,0), (0,1), (-1,0), (0,-1)]:  # Down, Right, Up, Left
+        nx, ny = x + dx, y + dy
+        if 0 <= nx < 3 and 0 <= ny < 3:
+            yield (nx, ny)
+
+def find_delivery_path(start_house):
+    start_pos = house_to_pos[start_house]
+    goal_pos = house_to_pos[goal_house]
+
+    pq = [(manhattan(start_pos), 0, start_pos)]
+    parent = {start_pos: None}
+    g = {start_pos: 0}
+
+    while pq:
+        _, cost, pos = heapq.heappop(pq)
+        if pos == goal_pos:
+            path = []
+            while pos:
+                path.append(pos)
+                pos = parent[pos]
+            return path[::-1]
+
+        for nb in neighbors(pos):
+            new_cost = cost + 1
+            if nb not in g or new_cost < g[nb]:
+                g[nb] = new_cost
+                parent[nb] = pos
+                heapq.heappush(pq, (new_cost + manhattan(nb), new_cost, nb))
+
+# Solve for delivery path
+delivery_path = find_delivery_path(start_house)
+
+# Print step-by-step delivery
+print("Delivery steps from House 1 to House 9:")
+for step_num, pos in enumerate(delivery_path, start=1):
+    house = next(k for k,v in house_to_pos.items() if v==pos)
+    print(f"Step {step_num}: Deliver to House {house} at position {pos}")
+
+OUTPUT:
+
+Delivery steps from House 1 to House 9:
+Step 1: Deliver to House 1 at position (0, 0)
+Step 2: Deliver to House 2 at position (0, 1)
+Step 3: Deliver to House 3 at position (0, 2)
+Step 4: Deliver to House 6 at position (1, 2)
+Step 5: Deliver to House 9 at position (2, 2)
+
+=== Code Execution Successful ===
