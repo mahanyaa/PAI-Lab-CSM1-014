@@ -1,0 +1,34 @@
+HMM CASE STUDY:
+
+CODE:
+
+from hmmlearn import hmm
+import numpy as np
+
+model = hmm.CategoricalHMM(n_components=3, n_iter=100)
+
+model.startprob_ = np.array([0.5, 0.3, 0.2])
+
+# Reduce "stickiness"
+model.transmat_ = np.array([
+    [0.4, 0.5, 0.1],
+    [0.3, 0.4, 0.3],
+    [0.2, 0.5, 0.3]
+])
+
+# Make emissions more distinct
+model.emissionprob_ = np.array([
+    [0.9, 0.1],  # Interested → almost always click
+    [0.2, 0.8],  # Neutral → mostly no-click
+    [0.1, 0.9]   # Disengaged → strongly no-click
+])
+
+observations = np.array([[0], [1], [1], [0]])
+
+hidden_states = model.predict(observations)
+
+print("States:", hidden_states)
+
+OUTPUT:
+
+States: [0 1 1 0]
