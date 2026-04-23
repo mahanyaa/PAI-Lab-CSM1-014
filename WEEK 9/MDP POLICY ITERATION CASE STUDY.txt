@@ -1,0 +1,62 @@
+MDP POLICY ITERATION CASE STUDY:
+
+CODE:
+
+states = ["Idle", "Working"]
+actions = ["Work", "Charge"]
+gamma = 0.9
+
+# Rewards for (state, action)
+reward = {
+    ("Idle", "Work"): 5,
+    ("Idle", "Charge"): 2,
+    ("Working", "Work"): 6,
+    ("Working", "Charge"): 3
+}
+
+# Transition model: next state
+transition = {
+    ("Idle", "Work"): "Working",
+    ("Idle", "Charge"): "Idle",
+    ("Working", "Work"): "Working",
+    ("Working", "Charge"): "Idle"
+}
+
+# Initialize policy and values
+policy = {s: "Work" for s in states}
+V = {s: 0 for s in states}
+
+for _ in range(10):
+    # --- Policy Evaluation ---
+    for _ in range(10):  # iterate to converge
+        new_V = V.copy()
+        for s in states:
+            a = policy[s]
+            next_s = transition[(s, a)]
+            new_V[s] = reward[(s, a)] + gamma * V[next_s]
+        V = new_V
+
+    # --- Policy Improvement ---
+    stable = True
+    for s in states:
+        old_action = policy[s]
+
+        # choose best action
+        best_action = max(actions, key=lambda a:
+            reward[(s, a)] + gamma * V[transition[(s, a)]]
+        )
+
+        policy[s] = best_action
+        if old_action != best_action:
+            stable = False
+
+    if stable:
+        break
+
+print("Optimal Warehouse Robot Policy:", policy)
+print("State Values:", V)
+
+OUTPUT:
+
+Optimal Warehouse Robot Policy: {'Idle': 'Work', 'Working': 'Work'}
+State Values: {'Idle': 38.079293594000006, 'Working': 39.079293594000006}
