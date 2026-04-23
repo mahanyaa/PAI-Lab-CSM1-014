@@ -1,0 +1,38 @@
+MDP VALUE ITERATION CASE STUDY
+
+CODE:
+
+states = ["Low", "Medium", "High"]
+actions = ["Short", "Medium", "Long"]
+gamma = 0.9
+
+# Reward depends on both state and action
+reward = {
+    ("Low", "Short"): 8,
+    ("Low", "Medium"): 10,
+    ("Low", "Long"): 6,
+    
+    ("Medium", "Short"): 4,
+    ("Medium", "Medium"): 5,
+    ("Medium", "Long"): 3,
+    
+    ("High", "Short"): -5,
+    ("High", "Medium"): -8,
+    ("High", "Long"): -10
+}
+
+# Initialize values
+V = {s: 0 for s in states}
+
+# Value Iteration
+for _ in range(20):
+    new_V = V.copy()
+    for s in states:
+        new_V[s] = max(reward[(s, a)] + gamma * V[s] for a in actions)
+    V = new_V
+
+print("Optimal State Values for Traffic Control:", V)
+
+OUTPUT:
+
+Optimal State Values for Traffic Control: {'Low': 87.84233454094309, 'Medium': 43.92116727047154, 'High': -43.92116727047154}
